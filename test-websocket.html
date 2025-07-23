@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test WebSocket</title>
+</head>
+<body>
+    <div id="output"></div>
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            console.log(message);
+            output.innerHTML += '<div>' + message + '</div>';
+        }
+        
+        try {
+            const ws = new WebSocket('ws://localhost:5000/chat-ws');
+            
+            ws.onopen = function() {
+                log('WebSocket connected successfully!');
+                
+                // Send test message
+                ws.send(JSON.stringify({
+                    type: 'key-exchange',
+                    publicKey: 'test-key',
+                    sessionId: 'test-session'
+                }));
+            };
+            
+            ws.onmessage = function(event) {
+                log('Received: ' + event.data);
+            };
+            
+            ws.onclose = function(event) {
+                log('WebSocket closed: ' + event.code + ' - ' + event.reason);
+            };
+            
+            ws.onerror = function(error) {
+                log('WebSocket error: ' + error);
+            };
+            
+        } catch (error) {
+            log('Failed to create WebSocket: ' + error);
+        }
+    </script>
+</body>
+</html>
